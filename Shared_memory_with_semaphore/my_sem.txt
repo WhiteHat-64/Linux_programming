@@ -1,0 +1,43 @@
+/********************************************************/
+/* Author: Vinoth R                                     */
+/* Date: 29-01-2019                                     */
+/* Filename: my_sem.txt                                    */
+/* Description: Explains semaphore operation            */
+/********************************************************/
+
+    /* Required prototypes
+    int semget(key_t key, int nsems, int semflg);
+    int semctl(int semid, int semnum, int cmd, ...);
+    int semop(int semid, struct sembuf *sops, size_t nsops);
+    int shmget(key_t key, size_t size, int shmflg);
+    void *shmat(int shmid, const void *shmaddr, int shmflg);
+    int shmdt(const void *shmaddr);
+    int shmctl(int shmid, int cmd, struct shmid_ds *buf);
+    */
+    
+
+    union semun {
+               int              val;    /* Value for SETVAL */
+               struct semid_ds *buf;    /* Buffer for IPC_STAT, IPC_SET */
+               unsigned short  *array;  /* Array for GETALL, SETALL */
+               struct seminfo  *__buf;  /* Buffer for IPC_INFO
+                                           (Linux-specific) */
+           };
+           
+           
+    struct semid_ds {
+               struct ipc_perm sem_perm;  /* Ownership and permissions */
+               time_t          sem_otime; /* Last semop time */
+               time_t          sem_ctime; /* Last change time */
+               unsigned long   sem_nsems; /* No. of semaphores in set */
+           };
+           
+    struct ipc_perm {
+               key_t          __key; /* Key supplied to semget(2) */
+               uid_t          uid;   /* Effective UID of owner */
+               gid_t          gid;   /* Effective GID of owner */
+               uid_t          cuid;  /* Effective UID of creator */
+               gid_t          cgid;  /* Effective GID of creator */
+               unsigned short mode;  /* Permissions */
+               unsigned short __seq; /* Sequence number */
+           };
