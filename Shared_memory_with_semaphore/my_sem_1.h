@@ -1,12 +1,12 @@
 /********************************************************/
 /* Author: Vinoth R                                     */
 /* Date: 29-01-2019                                     */
-/* Filename: my_sem.h                                      */
+/* Filename: my_sem_1.h                                      */
 /* Description: Explains semaphore operation            */
 /********************************************************/
 
-#ifndef SEM_H
-#define SEM_H
+#ifndef SEM_1_H
+#define SEM_1_H
 
 /* Included header files */
 #include <sys/types.h>
@@ -35,4 +35,4 @@ union semun {
 /* function prototypes */
 
 
-#endif /* SEM_H */
+#endif /* SEM_1_H */

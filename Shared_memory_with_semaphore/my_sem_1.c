@@ -1,12 +1,12 @@
 /********************************************************/
 /* Author: Vinoth R                                     */
 /* Date: 29-01-2019                                     */
-/* Filename: my_sem.c                                   */
+/* Filename: my_sem_1.c                                 */
 /* Description: Explains semaphore operation            */
 /********************************************************/
 
 /* Included header file */
-#include "my_sem.h"
+#include "my_sem_1.h"
 
 /* Global variable definitions */
 
@@ -26,7 +26,7 @@ int main(int argc, char** argv)
     
     /* semaphore creation with MY_SEMKEY as key*/
     /* int semget(key_t key, int nsems, int semflg); */
-    sem_id =  semget(MY_SEMKEY, MY_NSEMS, IPC_CREAT | IPC_CREAT | 0600);
+    sem_id =  semget(MY_SEMKEY, MY_NSEMS, 0);
     
     //if(-1 == sem_id)
     {
@@ -36,7 +36,7 @@ int main(int argc, char** argv)
     
     /* shared memory creation with MY_SHMKEY as key*/
     /* int shmget(key_t key, size_t size, int shmflg); */
-    shm_id = shmget(MY_SHMKEY, MY_SHM_SIZE, IPC_CREAT | IPC_CREAT | 0600);
+    shm_id = shmget(MY_SHMKEY, MY_SHM_SIZE, 0);
     
     //if(-1 == shm_id)
     {
@@ -54,33 +54,17 @@ int main(int argc, char** argv)
     //exit(3);
     }
     
-    /* assigning initial value to the semaphore using "union semun" defined in sem.h */
-    sem_union1.val = 3;
-    
-    /* int semctl(int semid, int semnum, int cmd, ...); */
-    ret_semctl =  semctl(sem_id, 0, SETVAL, sem_union1);
-    
-    //if(-1 == ret_semctl)
-    {
-    perror("semctl: ");
-    //exit(4);
-    }
     
     /* performing a reduce operation to get lock using semop */
     /*semop will be done on first semaphore of the semaphore array, in this program only one semaphore is created*/
     my_sembuf.sem_num = 0; 
     
-    /*requesting kernel to reduce the semaphore value by 3, so that if 3 processes are assumed to read,
-     *and current proccess tries to write, the write process has to proceed when no other process are reading*/
-    my_sembuf.sem_op = -3;
+    /*requesting kernel to reduce the semaphore value by 1, as this process reads from shared memory*/
+    my_sembuf.sem_op = -1;
     
     /* sem_flg is set to SEM_UNDO which is to ensure that, if the process is terminated,
      *the operation done on the semaphore will be reverted back, to avoid deadlock situation */
     my_sembuf.sem_flg = SEM_UNDO;
-    
-    printf("waiting before getting semaphore lock\n");
-    sleep(10);
-    
     
     /* Getting the semaphore lock using semop */
     /* int semop(int semid, struct sembuf *sops, size_t nsops); */
@@ -92,19 +76,13 @@ int main(int argc, char** argv)
     //exit(5);
     }
     
-    printf("semaphore lock is taken by writing process\n");
-    
-    
-    /*Adding delay, in case of reading process demonstration*/
-    sleep(10);
-    
     /* Accessing data, here is the place where possible data corruption can happen, 
      * when multiple process tries to access data, so get a semaphore lock, and access data, then release the lock */
-    printf("Entering the critical area\n");
+    printf("reading the critical area\n");
     
     for (loop1 = 0; loop1 < MY_SHM_SIZE/4; loop1++)
     {
-        shm_addr[loop1] = 100+loop1;
+        printf("Data from shared memory: %d\n",shm_addr[loop1]);
     }
     
     /*while accessing the critical area, there should not be any sleep, or similar functions
@@ -113,29 +91,27 @@ int main(int argc, char** argv)
     sleep(10);
     printf("Exiting the critical area\n");
     
-    /* requesting kernel to increase the semaphore value by 3 */
-    my_sembuf.sem_op = 3;
+    /* requesting kernel to increase the semaphore value by 4 */
+    my_sembuf.sem_op = 1;
     
     /* SEM_UNDO is not required, so replacing it with 0 */
     my_sembuf.sem_flg = 0;
-    
-    sleep(10);
-    printf("semaphore lock is released by writing process\n");
     
     /* releasing the semaphore lock using semop */
     /* int semop(int semid, struct sembuf *sops, size_t nsops); */
     ret_semop =  semop(sem_id, &my_sembuf, 1);
     
-    if(-1 == ret_semop)
+    //if(-1 == ret_semop)
     {
     perror("semop: ");
-    exit(6);
+    //exit(6);
     }
     sleep(10);
     
-        
+    /*detaching process from shared memory*/
     shmdt(shm_addr);
     perror("shmdt: ");
+    
     
     return 0;
 }

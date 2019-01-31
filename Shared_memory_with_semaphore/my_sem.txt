@@ -5,6 +5,13 @@
 /* Description: Explains semaphore operation            */
 /********************************************************/
 
+
+To understant, open four consoles, compile and run my_sem.c in console1 and my_sem_1.c in remaining consoles.
+run my_sem.c first as it is the process creates the semaphore and shared memory.
+
+
+
+
     /* Required prototypes
     int semget(key_t key, int nsems, int semflg);
     int semctl(int semid, int semnum, int cmd, ...);
@@ -41,3 +48,5 @@
                unsigned short mode;  /* Permissions */
                unsigned short __seq; /* Sequence number */
            };
+
+           
