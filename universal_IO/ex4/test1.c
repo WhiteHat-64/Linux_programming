@@ -16,13 +16,13 @@ int main(int argc, char** argv)
 
     fd1 = open(file_name, O_RDWR  | O_CREAT , S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH );
     if(0 > fd1) {
-        perror("open 1");
+        perror("open");
         return errno;
     }
 
-    fd2 = open(file_name, O_RDWR  | O_CREAT , S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH );
+    fd2 = dup(fd1);
     if(0 > fd2) {
-        perror("open 2");
+        perror("dup");
         return errno;
     }
     printf("fd1 %d, fd2 %d\n", fd1, fd2);
