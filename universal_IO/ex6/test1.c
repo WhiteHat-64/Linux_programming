@@ -12,7 +12,8 @@ int main(int argc, char** argv)
     char data_buff[101] = {0};
     off_t offset = 0;
 
-    fd1 = open(file_name, O_RDWR  | O_CREAT , S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH );
+    fd1 = open(file_name, O_RDWR  | O_CREAT , S_IRUSR | S_IWUSR | S_IRGRP |
+               S_IROTH );
     if(0 > fd1) {
         perror("open");
         return errno;
