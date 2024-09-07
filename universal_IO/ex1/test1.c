@@ -27,5 +27,6 @@ int main(int argc, char** argv)
     err=0;
 cleanup1:
     close(fd1);
+    while(1);
     return err;
 }
